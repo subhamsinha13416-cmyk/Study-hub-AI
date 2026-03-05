@@ -1,299 +1,118 @@
-f<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Have AI Assistant</title>
-    <!-- PWA Manifest Link for App Store Packaging -->
-    <link rel="manifest" href="manifest.json">
+    <title>Study Have AI - By Subham Sinha</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        // Use a clean, educational font
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        'primary-blue': '#4F46E5',
-                        'secondary-green': '#10B981',
-                        'accent-yellow': '#F59E0B',
-                        'bg-light': '#F9FAFB',
-                        'text-dark': '#1F2937',
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles for better aesthetics */
-        body {
-            background-color: theme('colors.bg-light');
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 90%;
-            margin: 0 auto;
-        }
-        @media (min-width: 768px) {
-            .container {
-                max-width: 800px;
-            }
-        }
-        textarea {
-            resize: none;
-        }
-        .btn-base {
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
-        }
-        .btn-base:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-        .result-box {
-            white-space: pre-wrap;
-            min-height: 100px;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .result-box { white-space: pre-wrap; word-wrap: break-word; }
     </style>
 </head>
-<body class="font-sans text-text-dark p-4 md:p-8">
+<body class="bg-gray-50 text-gray-900 min-h-screen p-4 md:p-8">
 
-    <div class="container flex flex-col items-center">
-        <!-- Header -->
-        <header class="text-center mb-8 w-full">
-            <h1 class="text-3xl font-extrabold text-primary-blue md:text-4xl">Study Have AI</h1>
-            <p class="mt-2 text-lg text-gray-600">Enter text on any topic for study assistance.</p>
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+        <header class="bg-indigo-600 p-6 text-center">
+            <h1 class="text-3xl font-bold text-white">Study Have AI</h1>
+            <p class="text-indigo-100 mt-2">Enter text or upload a file for smart study assistance.</p>
         </header>
 
-        <!-- Input Area -->
-        <div class="w-full mb-6">
-            <label for="topicInput" class="block text-sm font-medium text-gray-700 mb-2">
-                Paste your text, notes, or topic description here:
-            </label>
-            <textarea id="topicInput" rows="8" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-primary-blue focus:border-primary-blue shadow-lg bg-white" placeholder="E.g., 'The process of photosynthesis uses sunlight, water, and carbon dioxide to create food (glucose) and oxygen.'"></textarea>
-        </div>
-
-        <!-- Buttons -->
-        <div class="w-full flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 mb-8">
-            <button id="planBtn" onclick="handleAction('plan')"
-                    class="btn-base w-full py-3 px-6 rounded-xl text-white font-semibold bg-primary-blue hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                Generate Plan
-            </button>
-            <button id="summaryBtn" onclick="handleAction('summary')"
-                    class="btn-base w-full py-3 px-6 rounded-xl text-white font-semibold bg-secondary-green hover:bg-emerald-600 disabled:opacity-50 flex items-center justify-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
-                Generate Summary
-            </button>
-            <button id="mistakesBtn" onclick="handleAction('mistakes')"
-                    class="btn-base w-full py-3 px-6 rounded-xl text-white font-semibold bg-accent-yellow hover:bg-yellow-600 disabled:opacity-50 flex items-center justify-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                Common Mistakes
-            </button>
-        </div>
-
-        <!-- Result Display and Loading -->
-        <div class="w-full bg-white p-6 rounded-xl shadow-xl border border-gray-200">
-            <h2 id="resultTitle" class="text-xl font-bold mb-4 text-primary-blue">AI Response</h2>
-            <div id="loadingIndicator" class="hidden text-center py-8">
-                <div class="animate-spin rounded-full h-10 w-10 border-b-4 border-primary-blue mx-auto mb-3"></div>
-                <p class="text-gray-500">Thinking hard... generating helpful content!</p>
+        <main class="p-6 space-y-6">
+            <div>
+                <label for="topicInput" class="block text-sm font-semibold text-gray-700 mb-2">Topic or Notes Description:</label>
+                <textarea id="topicInput" rows="5" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition" placeholder="e.g., Explain Newton's Second Law of Motion..."></textarea>
             </div>
-            <pre id="resultOutput" class="result-box text-gray-800 text-base leading-relaxed"></pre>
-        </div>
+
+            <div class="bg-indigo-50 p-4 rounded-xl border-2 border-dashed border-indigo-200">
+                <label class="block text-sm font-semibold text-indigo-700 mb-2">Upload a File (Image or PDF):</label>
+                <input type="file" id="fileInput" accept="image/*,application/pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="handleAction('plan')" class="py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition">Generate Plan</button>
+                <button onclick="handleAction('summary')" class="py-3 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition">Generate Summary</button>
+                <button onclick="handleAction('mistakes')" class="py-3 px-6 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl transition">Common Mistakes</button>
+            </div>
+
+            <div id="resultArea" class="hidden">
+                <h2 id="resultTitle" class="text-xl font-bold text-indigo-900 mb-4 border-b pb-2">Result</h2>
+                <div id="loadingIndicator" class="hidden text-center py-8">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+                    <p class="mt-4 text-gray-600">Thinking hard... generating help...</p>
+                </div>
+                <div id="resultOutput" class="result-box bg-gray-50 p-6 rounded-xl border border-gray-200 text-gray-800 leading-relaxed"></div>
+            </div>
+        </main>
+
+        <footer class="bg-gray-100 p-4 text-center text-sm text-gray-500">
+            Created by Subham Sinha &copy; 2026
+        </footer>
     </div>
 
     <script>
-        const apiKey = "AIzaSyA52IaJV3PK29m85XpmxpghEfKt-O44Lh8";
-        const apiUrlBase = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        const apiKey = "AIzaSyA52laJV3PK29m85XpmxpghEfKt-O44Lh8"; //
+        const apiUrlBase = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`; //
 
-        
-        const inputArea = document.getElementById('topicInput');
-        const resultOutput = document.getElementById('resultOutput');
-        const resultTitle = document.getElementById('resultTitle');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const buttons = {
-            plan: document.getElementById('planBtn'),
-            summary: document.getElementById('summaryBtn'),
-            mistakes: document.getElementById('mistakesBtn')
-        };
-        
-        /**
-         * Converts Markdown text to HTML (simple paragraphs and bullet points).
-         * @param {string} mdText
-         * @returns {string} HTML formatted text
-         */
-        function formatMarkdown(mdText) {
-            if (!mdText) return '';
-            
-            // Simple replacement for bold and italic
-            mdText = mdText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            mdText = mdText.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            
-            // Handle lists (replace * or - at start of line with list structure)
-            const lines = mdText.split('\n');
-            let inList = false;
-            let htmlLines = [];
-
-            lines.forEach(line => {
-                if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
-                    if (!inList) {
-                        htmlLines.push('<ul>');
-                        inList = true;
-                    }
-                    // Simple conversion of list items
-                    htmlLines.push('<li>' + line.trim().substring(2) + '</li>');
-                } else {
-                    if (inList) {
-                        htmlLines.push('</ul>');
-                        inList = false;
-                    }
-                    if (line.trim()) {
-                        // Treat non-list lines as paragraphs
-                        htmlLines.push('<p class="mb-2">' + line.trim() + '</p>');
-                    }
-                }
+        // Helper: Convert file to Base64 for Gemini
+        async function fileToGenerativePart(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve({
+                    inlineData: { data: reader.result.split(',')[1], mimeType: file.type },
+                });
+                reader.readAsDataURL(file);
             });
-
-            if (inList) {
-                htmlLines.push('</ul>');
-            }
-
-            return htmlLines.join('\n');
         }
 
-        /**
-         * Generic function to call the Gemini API with exponential backoff.
-         * @param {string} userQuery - The content the user provided.
-         * @param {string} systemInstruction - The instruction for the model.
-         * @param {boolean} useGrounding - Whether to use Google Search grounding.
-         */
-        async function callGeminiAPI(userQuery, systemInstruction, useGrounding = true) {
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemInstruction }] },
-            };
-            
-            if (useGrounding) {
-                payload.tools = [{ "google_search": {} }];
-            }
+        async function handleAction(type) {
+            const topic = document.getElementById('topicInput').value;
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            const outputArea = document.getElementById('resultArea');
+            const outputText = document.getElementById('resultOutput');
+            const loading = document.getElementById('loadingIndicator');
 
-            const maxRetries = 3;
-            let delay = 1000;
-            
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const response = await fetch(apiUrlBase, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        if (response.status === 429 && i < maxRetries - 1) {
-                            // Rate limit, retry with backoff
-                            await new Promise(resolve => setTimeout(resolve, delay));
-                            delay *= 2;
-                            continue;
-                        }
-                        throw new Error(`API call failed with status: ${response.status}`);
-                    }
-
-                    const result = await response.json();
-                    const candidate = result.candidates?.[0];
-
-                    if (candidate && candidate.content?.parts?.[0]?.text) {
-                        let text = candidate.content.parts[0].text;
-                        
-                        let sources = [];
-                        const groundingMetadata = candidate.groundingMetadata;
-                        if (groundingMetadata && groundingMetadata.groundingAttributions) {
-                            sources = groundingMetadata.groundingAttributions
-                                .map(attr => ({
-                                    uri: attr.web?.uri,
-                                    title: attr.web?.title,
-                                }))
-                                .filter(source => source.uri && source.title);
-                        }
-                        
-                        // Append sources if available
-                        if (sources.length > 0) {
-                            text += "\n\n---\n**Sources:**\n";
-                            sources.slice(0, 3).forEach((s, index) => {
-                                text += `${index + 1}. [${s.title}](${s.uri})\n`;
-                            });
-                        }
-
-                        return text;
-                    } else {
-                        throw new Error("API response structure invalid or text content missing.");
-                    }
-
-                } catch (error) {
-                    console.error("Error in callGeminiAPI:", error);
-                    if (i === maxRetries - 1) {
-                        return `I'm sorry, an error occurred: ${error.message}`;
-                    }
-                    // Continue to next retry
-                }
-            }
-            return "An unexpected error occurred after multiple retries.";
-        }
-
-        /**
-         * Main handler to perform the selected action.
-         * @param {string} actionType - 'plan', 'summary', or 'mistakes'
-         */
-        async function handleAction(actionType) {
-            const input = inputArea.value.trim();
-            if (input.length < 10) {
-                resultOutput.innerHTML = '<p class="text-red-500">Please enter a more detailed text (at least 10 characters) to get a helpful response.</p>';
+            if (!topic && !file) {
+                alert("Please enter a topic or upload a file.");
                 return;
             }
 
-            let systemInstruction = "";
-            let title = "";
+            // Show loading and reset output
+            outputArea.classList.remove('hidden');
+            loading.classList.remove('hidden');
+            outputText.textContent = "";
 
-            switch (actionType) {
-                case 'plan':
-                    title = "📚 Generated Study Plan";
-                    systemInstruction = "You are an expert educational tutor. Analyze the student's text and create a structured, easy-to-follow study plan suitable for a primary school student. The plan must include 3-5 steps, suggested time estimates (e.g., 20 mins), and simple, active learning suggestions (e.g., 'Draw a diagram'). The output must be formatted using Markdown bullet points and bold text.";
-                    break;
-                case 'summary':
-                    title = "📝 Quick Summary";
-                    systemInstruction = "You are a concise summarizer. Summarize the provided text into 3-4 easy-to-understand bullet points. The language should be simple, direct, and suitable for a young student (primary school level). The output must be formatted using Markdown bullet points.";
-                    break;
-                case 'mistakes':
-                    title = "⚠️ Common Mistakes & Fixes";
-                    systemInstruction = "You are a pedagogical expert. Based on the topic of the provided text, identify and explain 3 common conceptual or factual mistakes a primary school student might make. For each mistake, provide a simple, constructive tip on how to avoid it. The output must be formatted using Markdown headings and paragraphs.";
-                    break;
-                default:
-                    return;
+            let prompt = "";
+            if (type === 'plan') prompt = `Create a detailed study plan for: ${topic}`;
+            if (type === 'summary') prompt = `Provide a clear summary of this: ${topic}`;
+            if (type === 'mistakes') prompt = `Identify common mistakes students make with: ${topic}`;
+
+            let parts = [{ text: prompt }];
+            if (file) {
+                const filePart = await fileToGenerativePart(file);
+                parts.push(filePart);
             }
 
-            // UI State: Loading
-            resultTitle.textContent = title;
-            resultOutput.textContent = '';
-            loadingIndicator.classList.remove('hidden');
-            Object.values(buttons).forEach(btn => btn.disabled = true);
-            
-            // API Call
-            const responseText = await callGeminiAPI(input, systemInstruction, true);
+            try {
+                const response = await fetch(apiUrlBase, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts }] })
+                });
 
-            // UI State: Done
-            loadingIndicator.classList.add('hidden');
-            Object.values(buttons).forEach(btn => btn.disabled = false);
-
-            // Display Result
-            resultOutput.innerHTML = formatMarkdown(responseText);
+                if (!response.ok) throw new Error(`Status: ${response.status}`);
+                
+                const data = await response.json();
+                const result = data.candidates[0].content.parts[0].text;
+                outputText.textContent = result;
+            } catch (error) {
+                outputText.textContent = `Error: ${error.message}. Please check your connection or API key.`;
+            } finally {
+                loading.classList.add('hidden');
+            }
         }
-
-        // Initialize display content
-        resultTitle.textContent = "Welcome to Study Have AI!";
-        resultOutput.innerHTML = '<p class="text-gray-500">Enter a concept, a set of notes, or a difficult question into the box above, and choose an action to get started. I can help you plan your study time, summarize notes, or understand common misunderstandings.</p>';
-
     </script>
 </body>
 </html>
