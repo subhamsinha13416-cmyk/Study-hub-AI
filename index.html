@@ -95,23 +95,29 @@
                 parts.push(filePart);
             }
 
-            try {
+                        try {
                 const response = await fetch(apiUrlBase, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts }] })
                 });
 
-                if (!response.ok) throw new Error(`Status: ${response.status}`);
+                if (!response.ok) {
+                    // NEW: This fetches the specific reason from Google (e.g. "API key disabled")
+                    const errorData = await response.json();
+                    throw new Error(errorData.error.message || `Status: ${response.status}`);
+                }
                 
                 const data = await response.json();
                 const result = data.candidates[0].content.parts[0].text;
                 outputText.textContent = result;
             } catch (error) {
-                outputText.textContent = `Error: ${error.message}. Please check your connection or API key.`;
+                // This will now show the REAL reason for the error
+                outputText.textContent = `Error: ${error.message}`;
             } finally {
                 loading.classList.add('hidden');
-            }
+                        }
+            
         }
     </script>
 </body>
